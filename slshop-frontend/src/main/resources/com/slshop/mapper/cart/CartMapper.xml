@@ -1,0 +1,34 @@
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="com.slshop.cart.CartMapper">
+	<resultMap id="cartMap" type="com.slshop.common.entity.CartItem">
+		<id column="ID" property="id" />
+		<result column="QUANTITY" property="quantity"/>
+		<association property="customer" javaType="com.slshop.common.entity.Customer">
+			<id column="CUID" property="id"/>
+		</association>
+		<collection property="product" ofType="com.slshop.common.entity.product.Product">
+			<id column="PRID" property="id"/>
+			<result column="NAME" property="name"/>
+			<result column="IMAGE" property="image"/>
+			<result column="PRICE" property="price"/>
+		</collection>
+	</resultMap>
+	
+	<select id="findByCustomerId" resultMap="cartMap">
+		SELECT
+			CA.ID,
+			CA.QUANTITY,
+			CU.ID AS CUID,
+			PR.ID AS PRID,
+			PR.NAME,
+			PR.IMAGE,
+			PR.PRICE
+		FROM CART_ITEMS CA
+		LEFT JOIN CUSTOMERS CU ON CA.CUSTOMER_ID = CU.ID
+		LEFT JOIN PRODUCTS PR ON CA.PRODUCT_ID = PR.ID
+		WHERE CU.ID = #{customerId}
+	</select>
+</mapper>

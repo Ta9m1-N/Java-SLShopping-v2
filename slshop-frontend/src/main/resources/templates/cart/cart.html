@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+	th:replace="~{layouts/base :: layout(~{::title}, ~{}, ~{}, ~{::body/content()})}"
+>
+<head>
+	<title>カート内一覧</title>
+</head>
+<body>
+	<section class="py-3">
+    	<table class="table align-middle">
+			<thead>
+				<tr class="text-center">
+					<th></th>
+					<th>#</th>
+					<th style="width:20%">商品画像</th>
+					<th>商品名</th>
+					<th>単価</th>
+					<th></th>
+					<th>数量</th>
+					<th></th>
+					<th>小計</th>
+				</tr>
+			</thead>
+			<tbody>
+				<!--cartItemsはcustomerIdとログイン中userIdが一致するもの-->
+				<tr class="text-center" th:each="cartItem : ${cartItems}">
+					<td>
+						<form th:action="@{/slshop/cart/delete/{id}(id=${cartItem.id})}" method="post">
+							<input type="submit" value="x">
+						</form>
+					</td>
+					<td>[[${cartItem.id}]]</td>
+					<td>
+						<img class="img-fluid mx-auto d-block" th:src="@{${cartItem.product.imagePath}}">
+					</td>
+					<td>[[${cartItem.product.name}]]</td>
+					<td>[[${cartItem.product.price}]]</td>
+					<td>
+						<button id="minus-btn" type="button" class="btn btn-secondary">
+							<i class="bi bi-dash"></i>
+						</button>
+					</td>
+					<td>
+						<input id="add-value" type="number" class="form-control text-center" readonly style="max-width: 3rem"/>
+					</td>
+					<td>
+						<button id="plus-btn" type="button" class="btn btn-secondary">
+							<i class="bi bi-plus"></i>
+						</button>
+					</td>
+					<td>[[${cartItem.getSubtotal()}]]</td>
+				</tr>
+			</tbody>
+		</table>
+		<div>
+			<div>カート合計</div>
+			<div>
+				<span>合計　　　\ </span>
+				<span th:text="${total}"></span>
+			</div>
+			<div>
+				<form>
+					<input type="submit" value="レジに進む">
+				</form>
+			</div>
+		</div>
+	</section>
+	<script>
+		let addValue = document.getElementById("add-value");
+		let minusBtn = document.getElementById("minus-btn");
+		let plusBtn = document.getElementById("plus-btn");
+	</script>
+</body>

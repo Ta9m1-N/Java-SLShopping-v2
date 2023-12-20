@@ -24,14 +24,14 @@
             [[${product.description}]]
           </p>
           <div class="d-flex input-group">
-              <button type="button" class="btn btn-secondary">
+              <button id="minus-btn" type="button" class="btn btn-secondary">
                 <i class="bi bi-dash"></i>
               </button>
-              <input type="text" class="form-control text-center" readonly style="max-width: 3rem" />
-              <button type="button" class="btn btn-secondary">
+              <input id="add-value" type="text" class="form-control text-center" readonly style="max-width: 3rem" />
+              <button id="plus-btn" type="button" class="btn btn-secondary">
                 <i class="bi bi-plus"></i>
               </button>
-              <button class="btn btn-outline-primary flex-shrink-0 ms-4" type="button">
+              <button id="add-btn" class="btn btn-outline-primary flex-shrink-0 ms-4" type="button">
                   <i class="bi-cart-fill me-1"></i>
                   カートに追加
               </button>
@@ -56,5 +56,49 @@
     </div>
   </section>
   <th:block th:replace="~{layouts/modal_fragments :: messageModal}" />
+  <script>
+	  let addValue = document.getElementById("add-value");
+	  let minusBtn = document.getElementById("minus-btn");
+	  let plusBtn = document.getElementById("plus-btn");
+	  let addBtn = document.getElementById("add-btn");
+	  let productNum = 1;
+	  addValue.setAttribute("value", productNum);
+
+	  
+	  let modal = document.getElementById("messageModal");
+	  let modalTitle = document.getElementById("modalTitle");
+	  let modalBody = document.getElementById("modalBody");
+	  modalTitle.textContent = "カートへ商品追加";
+	  
+	  let productNumChange = function(presentNum, nextNum){
+		if(presentNum > 1 && presentNum < 10){
+			addValue.setAttribute("value", nextNum);
+			productNum = nextNum;
+		}else if(presentNum == 1){
+			if(nextNum == 0){
+				modalBody.textContent = "最低数量は1個です。";
+				modal.style.display = "block";
+			}else{
+				addValue.setAttribute("value", nextNum);
+				productNum = nextNum;
+			}
+		}else if(presentNum == 10){
+			if(nextNum == 11){
+				modalBody.textContent = "最大数量は10個です。";
+				modal.style.display = "block";
+			}else{
+				addValue.setAttribute("value", nextNum);
+				productNum = nextNum;
+			}
+		}
+	  }
+	  
+	  minusBtn.addEventListener("click", function(){
+		  productNumChange(productNum, productNum-1);
+	  });
+	  plusBtn.addEventListener("click",function(){
+		  productNumChange(productNum, productNum+1);
+	  });
+  </script>
 </body>
 </html>

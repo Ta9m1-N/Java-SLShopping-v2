@@ -31,4 +31,34 @@
 		LEFT JOIN PRODUCTS PR ON CA.PRODUCT_ID = PR.ID
 		WHERE CU.ID = #{customerId}
 	</select>
+	
+	<select id="findByProductId" resultMap="cartMap">
+		SELECT
+			CA.ID,
+			CA.QUANTITY,
+			CU.ID AS CUID,
+			PR.ID AS PRID
+		FROM CART_ITEMS CA
+		LEFT JOIN CUSTOMERS CU ON CA.CUSTOMER_ID = CU.ID
+		LEFT JOIN PRODUCTS PR ON CA.PRODUCT_ID = PR.ID
+		WHERE PRODUCT_ID = #{productId}
+	</select>
+	
+	<select id="findById" resultMap="cartMap">
+		SELECT
+			ID,
+			QUANTITY
+		FROM CART_ITEMS
+		WHERE ID = #{id}
+	</select>
+	
+	<insert id="insert" useGeneratedKeys="true" keyColumn="ID">
+		INSERT INTO CART_ITEMS(ID,CUSTOMER_ID,PRODUCT_ID,QUANTITY)
+		VALUES (CART_ITEMS_ID_SEQ.nextval, #{customerId}, #{itemId}, #{value})
+	</insert>
+	
+	<update id="save">
+		UPDATE CART_ITEMS
+		SET QUANTITY = #{value} WHERE ID = #{itemId}
+	</update>
 </mapper>

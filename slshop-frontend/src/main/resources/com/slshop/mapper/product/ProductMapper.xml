@@ -45,6 +45,7 @@
             P.PRICE,
             P.LENGTH,
             P.WIDTH,
+            
             P.HEIGHT,
             P.WEIGHT,
             D.ID AS DETAIL_ID,

@@ -20,4 +20,16 @@ public class CartService {
 	public List<CartItem> getHisItems(Long customerId) {
 		return cartMapper.findByCustomerId(customerId);
 	}
+	
+	public List<CartItem> findByProductId(Integer productId) {
+		return this.cartMapper.findByProductId(productId);
+	}
+	
+	public void insert(int value, Long itemId, Long customerId) {
+		this.cartMapper.insert(customerId, itemId, value);
+	}
+	
+	public void save(int value, Long itemId) {
+		this.cartMapper.save(itemId, value);
+	}
 }

@@ -5485,6 +5485,7 @@ textarea.form-control-lg {
   overflow-x: hidden;
   overflow-y: auto;
   outline: 0;
+  background-color: rgba(0,0,0,0.4);
 }
 
 .modal-dialog {
@@ -5495,7 +5496,7 @@ textarea.form-control-lg {
 }
 .modal.fade .modal-dialog {
   transition: transform 0.3s ease-out;
-  transform: translate(0, -50px);
+  transform: translate(0, -20px);
 }
 @media (prefers-reduced-motion: reduce) {
   .modal.fade .modal-dialog {

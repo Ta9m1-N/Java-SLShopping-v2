@@ -13,6 +13,8 @@ public interface CartMapper {
 	
 	public List<CartItem> findByProductId(Integer productId);
 	
+	public CartItem findByProductIdAndCustomerId(Long productId, Long customerId);
+	
 	public CartItem findById(Long id);
 	
 	public void insert(Long customerId, Long itemId, int value);

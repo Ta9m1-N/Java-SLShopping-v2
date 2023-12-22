@@ -44,6 +44,12 @@
 		WHERE CA.PRODUCT_ID = #{productId}
 	</select>
 	
+	<select id="findByProductIdAndCustomerId" resultMap="cartMap">
+		SELECT QUANTITY
+		FROM CART_ITEMS
+		WHERE PRODUCT_ID = #{productId} AND CUSTOMER_ID = #{customerId}
+	</select>
+	
 	<select id="findById" resultMap="cartMap">
 		SELECT
 			ID,

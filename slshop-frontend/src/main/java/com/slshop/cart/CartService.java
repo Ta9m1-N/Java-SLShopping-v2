@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.slshop.common.entity.CartItem;
+import com.slshop.security.CustomerUserDetails;
 
 @Service
 public class CartService {
@@ -23,6 +24,15 @@ public class CartService {
 	
 	public List<CartItem> findByProductId(Integer productId) {
 		return this.cartMapper.findByProductId(productId);
+	}
+	
+	public int getQuantityByProductIdAndCustomerId(Long productId, CustomerUserDetails user) {
+		if(user == null) {
+			return -1;
+		}else {
+			Long customerId = user.getCustomer().getId();
+			return this.cartMapper.findByProductIdAndCustomerId(productId, customerId).getQuantity();
+		}
 	}
 	
 	public void insert(int value, Long itemId, Long customerId) {

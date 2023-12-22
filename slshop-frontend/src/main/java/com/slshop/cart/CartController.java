@@ -30,7 +30,7 @@ public class CartController {
 	@GetMapping
 	public String viewCart(Model model, @AuthenticationPrincipal CustomerUserDetails user) {
 		Long customerId = user.getCustomer().getId();
-		List<CartItem> cartItems = this.cartService.getHisItems(customerId);
+		List<CartItem> cartItems = this.cartService.getHisItemsNotZero(customerId);
 		int total = 0;
 		for(int i = 0; i < cartItems.size(); i++) {
 			total += cartItems.get(i).getSubtotal();
@@ -57,24 +57,24 @@ public class CartController {
 				if(cartItems.get(i).getCustomer().getId() == customerId) {
 					int finalItemValue = cartItems.get(i).getQuantity() + (int) itemValue;
 					if(finalItemValue <= 10) {
-						if(cartItems.get(i).getQuantity() == 0) {
-							this.cartService.insert(finalItemValue, cartItems.get(i).getId(), customerId);
-						}else {
-							this.cartService.save(finalItemValue, cartItems.get(i).getId());
-						}
+						this.cartService.save(finalItemValue, cartItems.get(i).getId());
 						redirectAttributes.addFlashAttribute("message", "商品をカートに追加しました(現在数量："+finalItemValue+")");
 						return "redirect:/products/detail/{id}";
 					}else {
 						redirectAttributes.addFlashAttribute("message", "商品を追加できませんでした。最大数量は10個です。(カート内："+cartItems.get(i).getQuantity()+")");
 						return "redirect:/products/detail/{id}";
 					}
-				}else {
-					this.cartService.insert((int) itemValue, productId.longValue(), customerId);
-					redirectAttributes.addFlashAttribute("message", "商品をカートに追加しました(現在数量："+itemValue+")");
-					return "redirect:/products/detail/{id}";
 				}
 			}
+			this.cartService.insert((int) itemValue, productId.longValue(), customerId);
+			redirectAttributes.addFlashAttribute("message", "商品をカートに追加しました(現在数量："+itemValue+")");
+			return "redirect:/products/detail/{id}";
 		}
-		return "";
+	}
+	
+	@PostMapping("/delete/{id}")
+	public String delete(@PathVariable("id") Integer cartItemId, @AuthenticationPrincipal CustomerUserDetails user) {
+		this.cartService.delete(cartItemId);
+		return "redirect:/cart";
 	}
 }

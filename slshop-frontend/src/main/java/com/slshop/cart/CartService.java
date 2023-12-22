@@ -17,8 +17,8 @@ public class CartService {
 		this.cartMapper = cartMapper;
 	}
 	
-	public List<CartItem> getHisItems(Long customerId) {
-		return cartMapper.findByCustomerId(customerId);
+	public List<CartItem> getHisItemsNotZero(Long customerId) {
+		return cartMapper.findByCustomerIdNotZero(customerId);
 	}
 	
 	public List<CartItem> findByProductId(Integer productId) {
@@ -31,5 +31,9 @@ public class CartService {
 	
 	public void save(int value, Long itemId) {
 		this.cartMapper.save(itemId, value);
+	}
+	
+	public void delete(Integer cartItemId) {
+		this.cartMapper.saveToZero(cartItemId.longValue());
 	}
 }

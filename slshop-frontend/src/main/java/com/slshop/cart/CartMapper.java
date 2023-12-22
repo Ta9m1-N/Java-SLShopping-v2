@@ -9,7 +9,7 @@ import com.slshop.common.entity.CartItem;
 @Mapper
 public interface CartMapper {
 	
-	public List<CartItem> findByCustomerId(Long customerId);
+	public List<CartItem> findByCustomerIdNotZero(Long customerId);
 	
 	public List<CartItem> findByProductId(Integer productId);
 	
@@ -18,4 +18,6 @@ public interface CartMapper {
 	public void insert(Long customerId, Long itemId, int value);
 	
 	public void save(Long itemId, int value);
+	
+	public void saveToZero(Long cartItemId);
 }

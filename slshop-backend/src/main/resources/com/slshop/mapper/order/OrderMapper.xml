@@ -14,6 +14,14 @@
 			<id column="CUID" property="id"/>
 			<result column="FIRST_NAME" property="firstName"/>
 			<result column="LAST_NAME" property="lastName"/>
+			<association property="address" javaType="com.slshop.common.entity.Address">
+				<id column="ADID" property="id"/>
+				<result column="PHONE_NUMBER" property="phoneNumber"/>
+				<result column="STATE" property="state"/>
+				<result column="CITY" property="city"/>
+				<result column="ADDRESS_LINE_1" property="addressLine1"/>
+				<result column="ADDRESS_LINE_2" property="addressLine2"/>
+			</association>
 		</association>
 	</resultMap>
 	
@@ -26,9 +34,32 @@
 			O.STATUS,
 			CU.ID AS CUID,
 			CU.FIRST_NAME,
-			CU.LAST_NAME
+			CU.LAST_NAME,
+			AD.ID AS ADID,
+			AD.PHONE_NUMBER,
+			AD.STATE,
+			AD.CITY,
+			AD.ADDRESS_LINE_1,
+			AD.ADDRESS_LINE_2
 		FROM ORDERS O
 		LEFT JOIN CUSTOMERS CU
 		ON O.CUSTOMER_ID = CU.ID
+		INNER JOIN ADDRESSES AD
+		ON AD.CUSTOMER_ID = CU.ID
+	</select>
+	
+	<select id="getCustomerAddress" resultMap="orderMap">
+		SELECT
+			CU.ID,
+			AD.ID AS ADID,
+			AD.PHONE_NUMBER,
+			AD.STATE,
+			AD.CITY,
+			AD.ADDRESS_LINE_1,
+			AD.ADDRESS_LINE_2
+		FROM CUSTOMERS CU
+		INNER JOIN ADDRESSES AD
+		ON AD.CUSTOMER_ID = CU.ID
+		WHERE CU.ID = #{customerId}
 	</select>
 </mapper>

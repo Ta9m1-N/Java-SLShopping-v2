@@ -11,7 +11,65 @@
 	<h1>受注一覧</h1>
 	<section>
 		<div>
-			検索機能
+			<form>
+				<div>
+					<label>受注データ検索</label>
+				</div>
+				<div>
+					<input type="text" name="text">
+				</div>
+				<div>
+					注文ID・名前・メールアドレス・電話番号・住所から受注データを検索します。
+				</div>
+				<div>
+					<label>対応状況</label>
+				</div>
+				<div>
+					<span>
+						<input type="checkbox" id="NEW" name="NEW">
+						<label for="NEW">新規受付</label>
+					</span>
+					<span>
+						<input type="checkbox" id="PAID" name="PAID">
+						<label for="PAID">入金済</label>
+					</span>
+					<span>
+						<input type="checkbox" id="PROCESSING" name="PROCESSING">
+						<label for="PROCESSING">注文処理中</label>
+					</span>
+					<span>
+						<input type="checkbox" id="CANCELLED" name="CANCELLED">
+						<label for="CANCELLED">注文取消し</label>
+					</span>
+					<span>
+						<input type="checkbox" id="PICKING" name="PICKING">
+						<label for="PICKING">発送準備</label>
+					</span>
+					<span>
+						<input type="checkbox" id="SHIPPING" name="SHIPPING">
+						<label for="SHIPPING">配送中</label>
+					</span>
+					<span>
+						<input type="checkbox" id="DELIVERED" name="DELIVERED">
+						<label for="DELIVERED">発送済</label>
+					</span>
+					<span>
+						<input type="checkbox" id="RETURN_REQUESTED" name="RETURN_REQUESTED">
+						<label for="RETURN_REQUESTED">返品受付</label>
+					</span>
+					<span>
+						<input type="checkbox" id="RETURNED" name="RETURNED">
+						<label for="RETURNED">返品済</label>
+					</span>
+					<span>
+						<input type="checkbox" id="REFUNDED" name="REFUNDED">
+						<label for="REFUNDED">返金済み</label>
+					</span>
+				</div>
+				<div>
+					<input type="submit" value="検索">
+				</div>
+			</form>
 		</div>
 	</section>
 	<section>
@@ -37,7 +95,13 @@
 							<td th:text="${order.paymentMethod.jpText}"></td>
 							<td th:text="${order.status.jpText}"></td>
 							<td><span>\ </span><span th:text="${order.total}"></span></td>
-							<td>東京都</td>
+							<td>
+								<span th:text="${order.customer.address.state}"></span>
+								<span th:text="${order.customer.address.city}"></span>
+								<span th:text="${order.customer.address.addressLine1}"></span>
+								<span th:text="${order.customer.address.addressLine2}"></span>
+							</td>
+							<td style="display: none;" th:text="${order.customer.address.phoneNumber}"></td>
 						</tr>
 					</div>
 				</tbody>

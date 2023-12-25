@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+  th:replace="~{layouts/base :: layout(~{::title}, ~{}, ~{}, ~{::body/content()})}"
+>
+<head>
+	<title>受注一覧</title>
+</head>
+<body>
+	<h1>受注一覧</h1>
+	<section>
+		<div>
+			検索機能
+		</div>
+	</section>
+	<section>
+		<div>
+			<table>
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>名前</th>
+						<th>注文日時</th>
+						<th>支払方法</th>
+						<th>対応状況</th>
+						<th>購入金額</th>
+						<th>お届け先</th>
+					</tr>
+				</thead>
+				<tbody>
+					<div>
+						<tr th:each="order : ${orders}">
+							<td th:text="${order.id}"></td>
+							<td th:text="${order.customer.getFullName}"></td>
+							<td class="orderTime" th:text="${order.orderTime}"></td>
+							<td th:text="${order.paymentMethod.jpText}"></td>
+							<td th:text="${order.status.jpText}"></td>
+							<td><span>\ </span><span th:text="${order.total}"></span></td>
+							<td>東京都</td>
+						</tr>
+					</div>
+				</tbody>
+			</table>
+		</div>
+		<div>
+			<form id="form" method="get">
+				<button form="form" formaction="/admin/orders/1">First</button>
+				<button id="previousPage" form="form">Previous</button>
+				<span id="pageSpace"></span>
+				<button id="nextPage" form="form">Next</button>
+				<button id="lastPage" form="form">Last</button>
+			</form>
+			<div id="pageNum" style="display: none;">[[${pageNum}]]</div>
+			<div id="pageAmount" style="display: none;">[[${pageAmount}]]</div>
+		</div>
+	</section>
+	<script>
+		let orderTimes = document.getElementsByClassName("orderTime");
+		for(let time of orderTimes){
+			let text = time.textContent;
+			result1 = text.replace(/-/g,'/');
+			result2 = result1.replace(/T/," ");
+			time.textContent = result2;
+		}
+		
+		let pageNum = Number(document.getElementById("pageNum").textContent);
+		let pageAmount = Number(document.getElementById("pageAmount").textContent);
+		
+		let lastPage = document.getElementById("lastPage");
+		lastPage.setAttribute("formaction","/admin/orders/"+pageAmount);
+		
+		let nextPage = document.getElementById("nextPage");
+		if(pageNum != pageAmount){
+			let nextPageNum1 = pageNum + 1;
+			nextPage.setAttribute("formaction","/admin/orders/"+nextPageNum1);
+		}else{
+			nextPage.setAttribute("type","button");
+		}
+		
+		let previousPage = document.getElementById("previousPage");
+		if(pageNum != 1){
+			let nextPageNum2 = pageNum - 1;
+			previousPage.setAttribute("formaction","/admin/orders/"+nextPageNum2);
+		}else{
+			previousPage.setAttribute("type","button");
+		}
+		
+		let pageSpace = document.getElementById("pageSpace");
+		for(let i = 1; i <= pageAmount; i++){
+			let pageBtn = document.createElement("button");
+			pageBtn.setAttribute("form", "form");
+			pageBtn.setAttribute("formaction","/admin/orders/"+i);
+			pageBtn.textContent = i;
+			pageSpace.appendChild(pageBtn);
+			if(i == pageNum){
+				pageBtn.setAttribute("type","button");
+				//スタイル適用後に改善
+				pageBtn.style["background-color"] = "black";
+			}
+		}
+	</script>
+</body>
+</html>

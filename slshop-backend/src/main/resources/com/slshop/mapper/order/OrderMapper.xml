@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.slshop.admin.order.OrderMapper">
+	<resultMap type="com.slshop.common.entity.order.Order" id="orderMap">
+		<id column="ID" property="id"/>
+		<result column="ORDER_TIME" property="orderTime"/>
+		<result column="TOTAL" property="total"/>
+		<result column="PAYMENT_METHOD" property="paymentMethod"/>
+		<result column="STATUS" property="status"/>
+		<association property="customer" javaType="com.slshop.common.entity.Customer">
+			<id column="CUID" property="id"/>
+			<result column="FIRST_NAME" property="firstName"/>
+			<result column="LAST_NAME" property="lastName"/>
+		</association>
+	</resultMap>
+	
+	<select id="findAll" resultMap="orderMap">
+		SELECT
+			O.ID,
+			O.ORDER_TIME,
+			O.TOTAL,
+			O.PAYMENT_METHOD,
+			O.STATUS,
+			CU.ID AS CUID,
+			CU.FIRST_NAME,
+			CU.LAST_NAME
+		FROM ORDERS O
+		LEFT JOIN CUSTOMERS CU
+		ON O.CUSTOMER_ID = CU.ID
+	</select>
+</mapper>

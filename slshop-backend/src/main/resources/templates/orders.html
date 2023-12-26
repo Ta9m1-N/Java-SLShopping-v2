@@ -11,12 +11,12 @@
 	<h1>受注一覧</h1>
 	<section>
 		<div>
-			<form>
+			<form id="searchForm" th:action="@{/orders/search/1}" method="post" th:object="${form}">
 				<div>
 					<label>受注データ検索</label>
 				</div>
 				<div>
-					<input type="text" name="text">
+					<input type="text" name="text" th:field="*{conditions}">
 				</div>
 				<div>
 					注文ID・名前・メールアドレス・電話番号・住所から受注データを検索します。
@@ -25,45 +25,9 @@
 					<label>対応状況</label>
 				</div>
 				<div>
-					<span>
-						<input type="checkbox" id="NEW" name="NEW">
-						<label for="NEW">新規受付</label>
-					</span>
-					<span>
-						<input type="checkbox" id="PAID" name="PAID">
-						<label for="PAID">入金済</label>
-					</span>
-					<span>
-						<input type="checkbox" id="PROCESSING" name="PROCESSING">
-						<label for="PROCESSING">注文処理中</label>
-					</span>
-					<span>
-						<input type="checkbox" id="CANCELLED" name="CANCELLED">
-						<label for="CANCELLED">注文取消し</label>
-					</span>
-					<span>
-						<input type="checkbox" id="PICKING" name="PICKING">
-						<label for="PICKING">発送準備</label>
-					</span>
-					<span>
-						<input type="checkbox" id="SHIPPING" name="SHIPPING">
-						<label for="SHIPPING">配送中</label>
-					</span>
-					<span>
-						<input type="checkbox" id="DELIVERED" name="DELIVERED">
-						<label for="DELIVERED">発送済</label>
-					</span>
-					<span>
-						<input type="checkbox" id="RETURN_REQUESTED" name="RETURN_REQUESTED">
-						<label for="RETURN_REQUESTED">返品受付</label>
-					</span>
-					<span>
-						<input type="checkbox" id="RETURNED" name="RETURNED">
-						<label for="RETURNED">返品済</label>
-					</span>
-					<span>
-						<input type="checkbox" id="REFUNDED" name="REFUNDED">
-						<label for="REFUNDED">返金済み</label>
+					<span th:each="item : ${checkboxItems}">
+						<input type="checkbox" name="check" th:value="${item.key}" th:field="*{check}"/>
+						<label th:text="${item.value}"></label>
 					</span>
 				</div>
 				<div>
@@ -107,7 +71,18 @@
 				</tbody>
 			</table>
 		</div>
-		<div>
+		<div th:if="${isOrdered}" id="isOrdered" class="1">
+			
+				<button form="searchForm" formaction="/admin/orders/search/1">First</button>
+				<button id="previousPage" form="searchForm">Previous</button>
+				<span id="pageSpace"></span>
+				<button id="nextPage" form="searchForm">Next</button>
+				<button id="lastPage" form="searchForm">Last</button>
+			
+			<div id="pageNum" style="display: none;">[[${pageNum}]]</div>
+			<div id="pageAmount" style="display: none;">[[${pageAmount}]]</div>
+		</div>
+		<div th:if="${isOrdered == null || !isOrdered}" id="isOrdered" class="0">
 			<form id="form" method="get">
 				<button form="form" formaction="/admin/orders/1">First</button>
 				<button id="previousPage" form="form">Previous</button>
@@ -128,16 +103,24 @@
 			time.textContent = result2;
 		}
 		
+		let isOrdered = document.getElementById("isOrdered");
+		let pass = "/admin/orders/";
+		let form = "form";
+		if(isOrdered.classList.contains("1")){
+			pass += "search/";
+			form = "searchForm";
+		}
+		
 		let pageNum = Number(document.getElementById("pageNum").textContent);
 		let pageAmount = Number(document.getElementById("pageAmount").textContent);
 		
 		let lastPage = document.getElementById("lastPage");
-		lastPage.setAttribute("formaction","/admin/orders/"+pageAmount);
+		lastPage.setAttribute("formaction",pass+pageAmount);
 		
 		let nextPage = document.getElementById("nextPage");
 		if(pageNum != pageAmount){
 			let nextPageNum1 = pageNum + 1;
-			nextPage.setAttribute("formaction","/admin/orders/"+nextPageNum1);
+			nextPage.setAttribute("formaction",pass+nextPageNum1);
 		}else{
 			nextPage.setAttribute("type","button");
 		}
@@ -145,7 +128,7 @@
 		let previousPage = document.getElementById("previousPage");
 		if(pageNum != 1){
 			let nextPageNum2 = pageNum - 1;
-			previousPage.setAttribute("formaction","/admin/orders/"+nextPageNum2);
+			previousPage.setAttribute("formaction",pass+nextPageNum2);
 		}else{
 			previousPage.setAttribute("type","button");
 		}
@@ -153,8 +136,8 @@
 		let pageSpace = document.getElementById("pageSpace");
 		for(let i = 1; i <= pageAmount; i++){
 			let pageBtn = document.createElement("button");
-			pageBtn.setAttribute("form", "form");
-			pageBtn.setAttribute("formaction","/admin/orders/"+i);
+			pageBtn.setAttribute("form", form);
+			pageBtn.setAttribute("formaction",pass+i);
 			pageBtn.textContent = i;
 			pageSpace.appendChild(pageBtn);
 			if(i == pageNum){

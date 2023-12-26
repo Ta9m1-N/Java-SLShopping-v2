@@ -14,6 +14,7 @@
 			<id column="CUID" property="id"/>
 			<result column="FIRST_NAME" property="firstName"/>
 			<result column="LAST_NAME" property="lastName"/>
+			<result column="EMAIL" property="email"/>
 			<association property="address" javaType="com.slshop.common.entity.Address">
 				<id column="ADID" property="id"/>
 				<result column="PHONE_NUMBER" property="phoneNumber"/>
@@ -46,20 +47,96 @@
 		ON O.CUSTOMER_ID = CU.ID
 		INNER JOIN ADDRESSES AD
 		ON AD.CUSTOMER_ID = CU.ID
+		ORDER BY O.ID ASC
 	</select>
 	
-	<select id="getCustomerAddress" resultMap="orderMap">
+	<select id="findByConditions" resultMap="orderMap">
 		SELECT
-			CU.ID,
+			O.ID,
+			O.ORDER_TIME,
+			O.TOTAL,
+			O.PAYMENT_METHOD,
+			O.STATUS,
+			CU.ID AS CUID,
+			CU.FIRST_NAME,
+			CU.LAST_NAME,
+			CU.EMAIL,
 			AD.ID AS ADID,
 			AD.PHONE_NUMBER,
 			AD.STATE,
 			AD.CITY,
 			AD.ADDRESS_LINE_1,
 			AD.ADDRESS_LINE_2
-		FROM CUSTOMERS CU
+		FROM ORDERS O
+		LEFT JOIN CUSTOMERS CU
+		ON O.CUSTOMER_ID = CU.ID
 		INNER JOIN ADDRESSES AD
 		ON AD.CUSTOMER_ID = CU.ID
-		WHERE CU.ID = #{customerId}
+		<where>
+			<if test="ids != null and !ids.isEmpty()">
+				O.ID IN
+				<foreach collection="ids" item="id" open="(" close=")" separator=",">#{id}</foreach>
+			</if>
+			<if test="emails != null and !emails.isEmpty()">
+				AND CU.EMAIL IN
+				<foreach collection="emails" item="email" open="(" close=")" separator=",">#{email}</foreach>
+			</if>
+			<if test="phoneNumbers != null and !phoneNumbers.isEmpty()">
+				AND AD.PHONE_NUMBER IN
+				<foreach collection="phoneNumbers" item="phoneNumber" open="(" close=")" separator=",">#{phoneNumber}</foreach>
+			</if>
+			<if test="others != null and !others.isEmpty()">
+				AND
+				(CU.FIRST_NAME IN
+				<foreach collection="others" item="other" open="(" close=")" separator=",">#{other}</foreach>
+				OR CU.LAST_NAME IN
+				<foreach collection="others" item="other" open="(" close=")" separator=",">#{other}</foreach>
+				OR AD.STATE IN
+				<foreach collection="others" item="other" open="(" close=")" separator=",">#{other}</foreach>
+				OR AD.CITY IN
+				<foreach collection="others" item="other" open="(" close=")" separator=",">#{other}</foreach>
+				OR AD.ADDRESS_LINE_1 IN
+				<foreach collection="others" item="other" open="(" close=")" separator=",">#{other}</foreach>
+				OR AD.ADDRESS_LINE_2 IN
+				<foreach collection="others" item="other" open="(" close=")" separator=",">#{other}</foreach>
+				)
+			</if>
+			<if test="statuses != null and !statuses.isEmpty()">
+				AND O.STATUS IN
+				<foreach collection="statuses" item="status" open="(" close=")" separator=",">#{status}</foreach>
+			</if>
+		</where>
+		ORDER BY O.ID ASC
+	</select>
+	
+	<select id="findByStatuses" resultMap="orderMap">
+		SELECT
+			O.ID,
+			O.ORDER_TIME,
+			O.TOTAL,
+			O.PAYMENT_METHOD,
+			O.STATUS,
+			CU.ID AS CUID,
+			CU.FIRST_NAME,
+			CU.LAST_NAME,
+			CU.EMAIL,
+			AD.ID AS ADID,
+			AD.PHONE_NUMBER,
+			AD.STATE,
+			AD.CITY,
+			AD.ADDRESS_LINE_1,
+			AD.ADDRESS_LINE_2
+		FROM ORDERS O
+		LEFT JOIN CUSTOMERS CU
+		ON O.CUSTOMER_ID = CU.ID
+		INNER JOIN ADDRESSES AD
+		ON AD.CUSTOMER_ID = CU.ID
+		<where>
+			<if test="statuses != null and !statuses.isEmpty()">
+				O.STATUS IN
+				<foreach collection="statuses" item="status" open="(" close=")" separator=",">#{status}</foreach>
+			</if>
+		</where>
+		ORDER BY O.ID ASC
 	</select>
 </mapper>

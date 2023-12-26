@@ -81,6 +81,10 @@ public class Address {
     public void setCustomer(Customer customer) {
         this.customer = customer;
     }
+    
+    public String getFullAddress() {
+    	return this.state + this.city + this.addressLine1 + this.addressLine2;
+    }
 
     public boolean isDefaultForShipping() {
 		return defaultForShipping;

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+  th:replace="~{layouts/base :: layout(~{::title}, ~{}, ~{}, ~{::body/content()})}"
+>
+<head>
+	<title>受注一覧</title>
+</head>
+<body>
+	<section class="m-4">
+		<h3>受注管理</h3>
+		<div class="p-3 bg-light rounded-1">
+			<form id="searchForm" th:action="@{/orders/search/1}" method="post" th:object="${form}">
+				<div class="mb-2">
+					<label class="fw-bolder">受注データ検索</label>
+					<input class="form-control" type="text" name="text" th:field="*{conditions}">
+					<div class="form-text">注文ID・名前・メールアドレス・電話番号・住所から受注データを検索します。</div>
+				</div>
+				<div class="mb-2">
+					<label class="fw-bolder">対応状況</label>
+					<div class="mb-3">
+						<span th:each="item : ${checkboxItems}">
+							<input class="form-check-input checkbox-btn" type="checkbox" name="check" th:value="${item.key}" th:field="*{check}"/>
+							<label class="form-check-label checkbox-label" th:text="${item.value}"></label>
+						</span>
+					</div>
+				</div>
+				<input class="btn btn-primary" type="submit" value="検索">
+			</form>
+		</div>
+	</section>
+	<section class="m-3">
+		<div class="px-3 border border-1 overflow-hidden" style="min-width: 981px;">
+			<table class="table">
+				<thead>
+					<tr class="text-center">
+						<th>ID</th>
+						<th>名前</th>
+						<th>注文日時</th>
+						<th>支払方法</th>
+						<th>対応状況</th>
+						<th>購入金額</th>
+						<th>お届け先</th>
+					</tr>
+				</thead>
+				<tbody>
+					<div>
+						<tr class="text-center" th:each="order : ${orders}">
+							<td th:text="${order.id}"></td>
+							<td th:text="${order.customer.getFullName}"></td>
+							<td class="orderTime" th:text="${order.orderTime}"></td>
+							<td th:text="${order.paymentMethod.jpText}"></td>
+							<td th:text="${order.status.jpText}"></td>
+							<td><span>\ </span><span th:text="${order.total}"></span></td>
+							<td class="text-start">
+								<span th:text="${order.customer.address.state}"></span>
+								<span th:text="${order.customer.address.city}"></span>
+								<span th:text="${order.customer.address.addressLine1}"></span>
+								<span th:text="${order.customer.address.addressLine2}"></span>
+							</td>
+							<td style="display: none;" th:text="${order.customer.address.phoneNumber}"></td>
+						</tr>
+					</div>
+				</tbody>
+			</table>
+		</div>
+		<div class="container-fluid">
+			<div th:if="${isOrdered}" id="isOrdered" class="1 d-flex row my-4">
+				<div class="text-center">
+					<button class="btn btn-outline-primary" form="searchForm" formaction="/admin/orders/search/1">First</button>
+					<button class="btn btn-outline-primary" id="previousPage" form="searchForm">Previous</button>
+					<span id="pageSpace"></span>
+					<button class="btn btn-outline-primary" id="nextPage" form="searchForm">Next</button>
+					<button class="btn btn-outline-primary" id="lastPage" form="searchForm">Last</button>
+				</div>
+				<div id="pageNum" style="display: none;">[[${pageNum}]]</div>
+				<div id="pageAmount" style="display: none;">[[${pageAmount}]]</div>
+			</div>
+			<div th:if="${isOrdered == null || !isOrdered}" id="isOrdered" class="0 d-flex row my-4">
+				<form class="text-center" id="form" method="get">
+					<button class="btn btn-outline-primary" form="form" formaction="/admin/orders/1">First</button>
+					<button class="btn btn-outline-primary" id="previousPage" form="form">Previous</button>
+					<span id="pageSpace"></span>
+					<button class="btn btn-outline-primary" id="nextPage" form="form">Next</button>
+					<button class="btn btn-outline-primary" id="lastPage" form="form">Last</button>
+				</form>
+				<div id="pageNum" style="display: none;">[[${pageNum}]]</div>
+				<div id="pageAmount" style="display: none;">[[${pageAmount}]]</div>
+			</div>
+		</div>
+	</section>
+	<script>
+		let checkboxBtn = document.getElementsByClassName("checkbox-btn");
+		let checkboxLabel = document.getElementsByClassName("checkbox-label");
+		for(let i = 1; i <= checkboxBtn.length; i++){
+			checkboxLabel[i - 1].setAttribute("for","check"+i);
+		}
+		
+		let orderTimes = document.getElementsByClassName("orderTime");
+		for(let time of orderTimes){
+			let text = time.textContent;
+			result1 = text.replace(/-/g,'/');
+			result2 = result1.replace(/T/," ");
+			time.textContent = result2;
+		}
+		
+		let isOrdered = document.getElementById("isOrdered");
+		let pass = "/admin/orders/";
+		let form = "form";
+		if(isOrdered.classList.contains("1")){
+			pass += "search/";
+			form = "searchForm";
+		}
+		
+		let pageNum = Number(document.getElementById("pageNum").textContent);
+		let pageAmount = Number(document.getElementById("pageAmount").textContent);
+		
+		let lastPage = document.getElementById("lastPage");
+		lastPage.setAttribute("formaction",pass+pageAmount);
+		
+		let nextPage = document.getElementById("nextPage");
+		if(pageNum != pageAmount){
+			let nextPageNum1 = pageNum + 1;
+			nextPage.setAttribute("formaction",pass+nextPageNum1);
+		}else{
+			nextPage.classList.replace("btn-outline-primary","btn-primary");
+			nextPage.setAttribute("disabled","");
+		}
+		
+		let previousPage = document.getElementById("previousPage");
+		if(pageNum != 1){
+			let nextPageNum2 = pageNum - 1;
+			previousPage.setAttribute("formaction",pass+nextPageNum2);
+		}else{
+			previousPage.classList.replace("btn-outline-primary","btn-primary");
+			previousPage.setAttribute("disabled","");
+		}
+		
+		let pageSpace = document.getElementById("pageSpace");
+		for(let i = 1; i <= pageAmount; i++){
+			let pageBtn = document.createElement("button");
+			pageBtn.setAttribute("form", form);
+			pageBtn.setAttribute("formaction",pass+i);
+			pageBtn.classList.add("btn");
+			pageBtn.classList.add("btn-outline-primary");
+			pageBtn.textContent = i;
+			pageSpace.appendChild(pageBtn);
+			if(i == pageNum){
+				pageBtn.classList.replace("btn-outline-primary","btn-primary");
+				pageBtn.setAttribute("disabled","");
+			}
+		}
+	</script>
+</body>
+</html>

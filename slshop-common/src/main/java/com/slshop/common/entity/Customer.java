@@ -11,6 +11,8 @@ public class Customer {
     private String firstName;
 
     private String lastName;
+    
+    private Address address;
 
     private boolean enabled;
 
@@ -71,6 +73,14 @@ public class Customer {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+    
+    public Address getAddress() {
+    	return this.address;
+    }
+    
+    public void setAddress(Address address) {
+    	this.address = address;
     }
 
     public boolean isEnabled() {

@@ -8,69 +8,160 @@
 	<title>カート内一覧</title>
 </head>
 <body>
-	<section class="py-3">
-    	<table class="table align-middle">
-			<thead>
-				<tr class="text-center">
-					<th></th>
-					<th>#</th>
-					<th style="width:20%">商品画像</th>
-					<th>商品名</th>
-					<th>単価</th>
-					<th></th>
-					<th>数量</th>
-					<th></th>
-					<th>小計</th>
-				</tr>
-			</thead>
-			<tbody>
-				<!--cartItemsはcustomerIdとログイン中userIdが一致するもの-->
-				<tr class="text-center" th:each="cartItem : ${cartItems}">
-					<td>
-						<form th:action="@{/slshop/cart/delete/{id}(id=${cartItem.id})}" method="post">
-							<input type="submit" value="x">
-						</form>
-					</td>
-					<td>[[${cartItem.id}]]</td>
-					<td>
-						<img class="img-fluid mx-auto d-block" th:src="@{${cartItem.product.imagePath}}">
-					</td>
-					<td>[[${cartItem.product.name}]]</td>
-					<td>[[${cartItem.product.price}]]</td>
-					<td>
-						<button id="minus-btn" type="button" class="btn btn-secondary">
-							<i class="bi bi-dash"></i>
-						</button>
-					</td>
-					<td>
-						<input id="add-value" type="text" class="form-control text-center" readonly style="max-width: 3rem"/>
-					</td>
-					<td>
-						<button id="plus-btn" type="button" class="btn btn-secondary">
-							<i class="bi bi-plus"></i>
-						</button>
-					</td>
-					<td>[[${cartItem.getSubtotal()}]]</td>
-				</tr>
-			</tbody>
-		</table>
-		<div>
-			<div>カート合計</div>
-			<div>
-				<span>合計　　　\ </span>
-				<span th:text="${total}"></span>
-			</div>
-			<div>
-				<form>
-					<input type="submit" value="レジに進む">
-				</form>
+	<section>
+		<div class="container px-lg-3" style="margin-top: 60px;margin-bottom: 150px;" th:if="${cartItems.size} != 0">
+			<div class="row">
+				<div class="col">
+					<div style="border-style: solid;border-color: lightgray;border-width: 2px;border-radius: 5px;margin: 10px;min-width: 980px;">
+						<table class="table align-middle">
+							<thead>
+								<tr class="text-center bg-light" style="border-bottom-color: lightgray;border-bottom-style: solid;border-bottom-width: 3px;">
+									<th></th>
+									<th>#</th>
+									<th style="width:20%">商品画像</th>
+									<th>商品名</th>
+									<th>単価</th>
+									<th>数量</th>
+									<th>小計</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr class="text-center tbody-tr" th:each="cartItem : ${cartItems}" style="border-bottom-color: gray;border-bottom-style: solid;border-bottom-width: 1px;">
+									<td>
+										<form th:action="@{/cart/delete/{id}(id=${cartItem.id})}" method="post">
+											<button type="submit" class="btn btn-danger">
+												<i class="bi-trash-fill"></i>
+											</button>
+										</form>
+									</td>
+									<td class="itemNumber"></td>
+									<td>
+										<img class="img-fluid mx-auto d-block" style="width: 133px" th:src="@{${cartItem.product.imagePath}}">
+									</td>
+									<td>[[${cartItem.product.name}]]</td>
+									<td><span>\ </span><span class="itemPrice">[[${cartItem.product.price}]]</span></td>
+									<td class="container" style="width: 200px">
+										<div class="input-group" style="margin: 28px;">
+											<button name="minus-btn" type="button" class="btn btn-secondary">
+									      		<i class="bi bi-dash"></i>
+									      	</button>
+									      	<input name="itemValue" type="text" class="form-control text-center" readonly style="max-width: 3rem" />
+									      	<button name="plus-btn" type="button" class="btn btn-secondary">
+									      		<i class="bi bi-plus"></i>
+									      	</button>
+										</div>
+								      	<span class="quantity" th:text="${cartItem.quantity}" style="display: none;"></span>
+									</td>
+									<td><span>\ </span><span class="subtotal"></span></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div class="col" style="min-width: 280px; height: 158px;">
+					<div style="border-style: solid; border-width: 1px; border-color: lightgray;border-radius: 3px;margin: 10px;">
+						<div class="bg-light" style="border-bottom-color: lightgray; border-bottom-style: solid; border-bottom-width: 2px; padding: 6px; font-weight: 500;font-size: larger;">カート合計</div>
+						<div class="d-flex" style="font-size: x-large; font-weight: 700; padding: 10px;">
+							<span>合計</span>
+							<span style="margin-left: auto;">
+								<span>\ </span>
+								<span id="total"></span>
+							</span>
+						</div>
+						<div style="margin: 10px;">
+							<form>
+								<input class="btn btn-primary" type="submit" value="レジに進む">
+							</form>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
+		<div th:if="${cartItems.size} == 0" style="text-align: center; font-size: xxx-large; font-weight: 100; margin: 50px;">
+			カートは空です
+		</div>
 	</section>
+	<th:block th:replace="~{layouts/modal_fragments :: messageModal}" />
 	<script>
-		let addValue = document.getElementById("add-value");
-		let minusBtn = document.getElementById("minus-btn");
-		let plusBtn = document.getElementById("plus-btn");
-		let ItemNum = 0;
+		let itemValueTag = document.getElementsByName("itemValue");
+		let minusBtn = document.getElementsByName("minus-btn");
+		let plusBtn = document.getElementsByName("plus-btn");
+		
+		let modal = document.getElementById("messageModal");
+		let modalTitle = document.getElementById("modalTitle");
+		let modalBody = document.getElementById("modalBody");
+		modalTitle.textContent = "商品数量変更";
+		
+		let itemNumTag = document.getElementsByClassName("itemNumber");
+		let firstValue = document.getElementsByClassName("quantity");
+		let itemPriceTag = document.getElementsByClassName("itemPrice");
+		let subtotalTag = document.getElementsByClassName("subtotal");
+		let totalTag = document.getElementById("total");
+		let itemValue = [];
+		let itemPrice = [];
+		let subtotal = [];
+		let total = 0;
+		let changePrice = 0;
+		for(let i = 0; i < itemValueTag.length; i++){
+			itemNumTag[i].textContent = i+1;
+			itemValue.push(Number(firstValue[i].textContent));
+			itemValueTag[i].setAttribute("value", firstValue[i].textContent);
+			itemPrice.push(Number(itemPriceTag[i].textContent));
+			subtotal.push(itemValue[i]*itemPrice[i]);
+			subtotalTag[i].textContent = subtotal[i];
+			total += subtotal[i];
+			totalTag.textContent = total;
+			minusBtn[i].addEventListener("click", function(){
+				if(itemValue[i] != 1){
+					total -= itemPrice[i];
+					totalTag.textContent = total;
+				}
+				itemValueChange(itemValue[i], itemValue[i]-1, i);
+				subtotal[i] = itemValue[i]*itemPrice[i];
+				subtotalTag[i].textContent = subtotal[i];
+			});
+			plusBtn[i].addEventListener("click",function(){
+				if(itemValue[i] != 10){
+					total += itemPrice[i];
+					totalTag.textContent = total;
+				}
+				itemValueChange(itemValue[i], itemValue[i]+1, i);
+				subtotal[i] = itemValue[i]*itemPrice[i];
+				subtotalTag[i].textContent = subtotal[i];
+			});
+		}
+		let itemValueChange = function(presentValue, nextValue, tagNum){
+			if(presentValue > 1 && presentValue < 10){
+				itemValueTag[tagNum].setAttribute("value", nextValue);
+				itemValue[tagNum] = nextValue;
+			}else if(presentValue == 1){
+				if(nextValue == 0){
+					modalBody.textContent = "最低数量は1個です。";
+					modal.style.display = "block";
+					modal.classList.add("show");
+				}else{
+					itemValueTag[tagNum].setAttribute("value", nextValue);
+					itemValue[tagNum] = nextValue;
+				}
+			}else if(presentValue == 10){
+				if(nextValue == 11){
+					modalBody.textContent = "最大数量は10個です。";
+					modal.style.display = "block";
+					modal.classList.add("show");
+				}else{
+					itemValueTag[tagNum].setAttribute("value", nextValue);
+					itemValue[tagNum] = nextValue;
+				}
+			}
+		}
+		
+		let closeBtn1 = document.getElementById("btn-close-1");
+		let closeBtn2 = document.getElementById("btn-close-2");
+		closeBtn1.addEventListener("click", function(){
+			modal.style.display = "none";
+		});
+		closeBtn2.addEventListener("click", function(){
+			modal.style.display = "none";
+		});
 	</script>
 </body>

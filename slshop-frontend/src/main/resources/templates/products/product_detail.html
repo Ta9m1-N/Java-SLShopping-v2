@@ -41,6 +41,7 @@
         </div>
       </div>
     </div>
+    <div id="cartItemValue" style="display: none;">[[${cartItemValue}]]</div>
   </section>
   <section class="py-3 bg-light">
     <div class="container px-4 px-lg-5 mt-1">
@@ -66,6 +67,7 @@
 	  addValue.setAttribute("value", productNum);
 
 	  let addBtn = document.getElementById("add-btn");
+	  let cartItemValue = document.getElementById("cartItemValue");
 	  
 	  let modal = document.getElementById("messageModal");
 	  let modalTitle = document.getElementById("modalTitle");
@@ -103,7 +105,21 @@
 		  productNumChange(productNum, productNum+1);
 	  });
 	  addBtn.addEventListener("mousedown", function(){
-		  addBtn.setAttribute("value", productNum);
+		  if(productNum < 1 || productNum > 10){
+			  modalBody.textContent = "不正な入力値です";
+			  modal.style.display = "block";
+			  modal.classList.add("show");
+		  }else if(cartItemValue < 0){
+			  modalBody.textContent = "ログインが必要です";
+			  modal.style.display = "block";
+			  modal.classList.add("show");
+		  }else if(cartItemValue + productNum > 10){
+			  modalBody.textContent = "商品を追加できませんでした。最大数量は10個です。(カート内："+cartItemValue+")";
+			  modal.style.display = "block";
+			  modal.classList.add("show");
+		  }else{
+			  addBtn.setAttribute("value", productNum);
+		  }
 	  });
 	  
 	  let message = document.getElementById("message").textContent;

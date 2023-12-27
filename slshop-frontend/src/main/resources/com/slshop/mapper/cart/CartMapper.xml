@@ -17,7 +17,7 @@
 		</collection>
 	</resultMap>
 	
-	<select id="findByCustomerId" resultMap="cartMap">
+	<select id="findByCustomerIdNotZero" resultMap="cartMap">
 		SELECT
 			CA.ID,
 			CA.QUANTITY,
@@ -29,7 +29,7 @@
 		FROM CART_ITEMS CA
 		LEFT JOIN CUSTOMERS CU ON CA.CUSTOMER_ID = CU.ID
 		LEFT JOIN PRODUCTS PR ON CA.PRODUCT_ID = PR.ID
-		WHERE CU.ID = #{customerId}
+		WHERE CU.ID = #{customerId} AND CA.QUANTITY != 0
 	</select>
 	
 	<select id="findByProductId" resultMap="cartMap">
@@ -41,7 +41,13 @@
 		FROM CART_ITEMS CA
 		LEFT JOIN CUSTOMERS CU ON CA.CUSTOMER_ID = CU.ID
 		LEFT JOIN PRODUCTS PR ON CA.PRODUCT_ID = PR.ID
-		WHERE PRODUCT_ID = #{productId}
+		WHERE CA.PRODUCT_ID = #{productId}
+	</select>
+	
+	<select id="findByProductIdAndCustomerId" resultMap="cartMap">
+		SELECT QUANTITY
+		FROM CART_ITEMS
+		WHERE PRODUCT_ID = #{productId} AND CUSTOMER_ID = #{customerId}
 	</select>
 	
 	<select id="findById" resultMap="cartMap">
@@ -60,5 +66,10 @@
 	<update id="save">
 		UPDATE CART_ITEMS
 		SET QUANTITY = #{value} WHERE ID = #{itemId}
+	</update>
+	
+	<update id="saveToZero">
+		UPDATE CART_ITEMS
+		SET QUANTITY = 0 WHERE ID = #{cartItemId}
 	</update>
 </mapper>
